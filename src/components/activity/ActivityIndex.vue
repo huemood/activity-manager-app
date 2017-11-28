@@ -18,11 +18,9 @@
                     <option value=""></option> </#list>
                   </select>
                 </div>
-                <label class="col-lg-2 control-label" for="articleBrandID">品牌</label>
+                <label class="col-lg-2 control-label" for="articleName">名称</label>
                 <div class="col-lg-2">
-                  <select id="articleBrandID" name="articleBrandID" class="selectpicker form-control" data-live-search="true">
-                    <option value="" selected="selected">请选择</option>
-                  </select>
+                  <input id="articleName" name="articleName" type="text" class="form-control" placeholder="请输入名称" v-model="activityName"/>
                 </div>
                 <label class="col-lg-2 control-label" for="articleClassifyID">分类</label>
                 <div class="col-lg-2">
@@ -32,16 +30,29 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-lg-2 control-label" for="articleName">名称</label>
+                <label class="col-lg-2 control-label" for="activityStartTime">起始时间</label>
                 <div class="col-lg-2">
-                  <input id="articleName" name="articleName" type="text" class="form-control" placeholder="请输入名称"/>
+                  <div class="input-group date dateTimePickerDiv" data-link-field="activityStartTime" data-link-format="yyyy-mm-dd">
+                    <input id="activityStartTime" name="orderCreatedStart" class="form-control" size="1" type="text" v-model="activityStartTime">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                  </div>
+                  <input type="hidden"  value="" />
                 </div>
-                <div class="col-lg-2 col-lg-offset-6">
+                <label class="col-lg-2 control-label" for="activityEndTime">结束时间</label>
+                <div class="col-lg-2">
+                  <div class="input-group date dateTimePickerDiv" data-link-field="activityEndTime" data-link-format="yyyy-mm-dd">
+                    <input id="activityEndTime" name="activityEndTime" class="form-control" size="1" type="text" v-model="activityEndTime">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-lg-offset-2">
                   <button id="btn-search" class="btn btn-primary"
-                          data-loading-text="Loading..." type="button">查询</button>
+                          data-loading-text="Loading..." type="button" @click="search">查询</button>
                   <button id="btn-reset" class="btn btn-primary"
                           data-loading-text="Loading..." type="button">清空</button>
-                  <router-link to="/main/activity/add">
+                  <router-link :to="{name:'ActivityAdd',params: {activityName:'123456'}}">
                     <button class="btn btn-primary btn-add" data-bmuuid=""
                           data-loading-text="Loading..." type="button">增加</button>
                   </router-link>
@@ -83,9 +94,9 @@
     <div class="row">
       <div class="col-lg-2">
         <small>每页
-        <select v-model="display">
-          <option value="2">2</option>
-          <option value="3">3</option>
+        <select v-model="display" @change="selectPageSize">
+          <option value="5">5</option>
+          <option value="10">10</option>
         </select>
           条
         </small>
@@ -103,12 +114,13 @@
   import Pagination from '@/components/common/Pagination'
   export default {
     name: 'ActivityIndex',
-    data () {
+    data: function () {
       return {
         lists: [],
         total: 6,
-        display: 2,
-        current: 1
+        display: 5,
+        current: 1,
+        activityName: ''
       }
     },
     created () {
@@ -116,7 +128,7 @@
     },
     methods: {
       loadData: function () {
-        this.$axios.post('http://localhost:9001/api/activity/list/0/' + this.display + '?' + Math.random())
+        this.$axios.post('/aapi/activity/list/0/' + this.display + '?' + Math.random())
           .then(function (response) {
             console.log(response.data)
             this.lists = response.data.list
@@ -141,6 +153,28 @@
           .catch(function (error) {
             console.log(error)
           })
+      },
+      search: function () {
+        this.getPageData(0)
+      },
+      getPageData: function (page) {
+        console.log(this.$constVal)
+        let param = new URLSearchParams()
+        param.append('activityName', this.activityName)
+        this.$axios.post(this.$constVal.host + '/api/activity/list/' + page + '/' + this.display + '?' + Math.random(),
+          param, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }
+        ).then((response) => {
+          console.log(response.data)
+          this.lists = response.data.list
+          this.total = response.data.count
+        })
+      },
+      selectPageSize: function () {
+        this.getPageData(0)
       }
     },
     components: {
