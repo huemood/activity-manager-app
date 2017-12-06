@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 import Login from '@/components/Login'
 import MainPage from '@/components/MainPage'
 import ActivityIndex from '@/components/activity/ActivityIndex'
@@ -24,6 +23,11 @@ export default new Router({
           path: 'ai',
           name: 'ActivityIndex',
           component: ActivityIndex
+        },
+        {
+          path: 'activity/edit/:id',
+          name: 'ActivityEdit',
+          component: ActivityAdd
         },
         {
           path: 'activity/add',

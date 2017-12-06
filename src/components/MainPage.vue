@@ -28,7 +28,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li><a href="#">设置</a></li>
-                  <li><router-link to="/">注销</router-link></li>
+                  <li><a href="#" @click="logout">注销</a></li>
                 </ul>
               </li>
             </ul>
@@ -156,6 +156,11 @@
     data () {
       return {
         msg: 'Welcome to Your Vue.js App first vue page'
+      }
+    },
+    methods: {
+      logout: function () {
+        window.location.href = 'http://localhost:9001/logout'
       }
     }
   }

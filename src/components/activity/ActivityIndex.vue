@@ -52,7 +52,7 @@
                           data-loading-text="Loading..." type="button" @click="search">查询</button>
                   <button id="btn-reset" class="btn btn-primary"
                           data-loading-text="Loading..." type="button">清空</button>
-                  <router-link :to="{name:'ActivityAdd',params: {activityName:'123456'}}">
+                  <router-link to="activity/add">
                     <button class="btn btn-primary btn-add" data-bmuuid=""
                           data-loading-text="Loading..." type="button">增加</button>
                   </router-link>
@@ -83,7 +83,9 @@
               <td>{{item.activityStartTime}}</td>
               <td>{{item.activityEndTime}}</td>
               <td>
-                <button class="btn btn-primary btn-edit" data-id="">编辑</button>
+                <router-link :to="'activity/edit/'+item.activityID">
+                  <button class="btn btn-primary btn-edit" data-id="">编辑</button>
+                </router-link>
               </td>
             </tr>
             </tbody>
@@ -143,7 +145,7 @@
         console.log(currentPage)
         let page = currentPage - 1
         // ajax请求, 向后台发送 currentPage, 来获取对应的数据
-        this.$axios.post('http://localhost:9001/api/activity/list/' + page + '/' + this.display + '?' + Math.random())
+        this.$axios.post('/aapi/activity/list/' + page + '/' + this.display + '?' + Math.random())
           .then(function (response) {
             console.log(response.data)
             this.lists = response.data.list
@@ -161,7 +163,7 @@
         console.log(this.$constVal)
         let param = new URLSearchParams()
         param.append('activityName', this.activityName)
-        this.$axios.post(this.$constVal.host + '/api/activity/list/' + page + '/' + this.display + '?' + Math.random(),
+        this.$axios.post('/aapi/activity/list/' + page + '/' + this.display + '?' + Math.random(),
           param, {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
