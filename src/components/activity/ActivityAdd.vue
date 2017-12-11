@@ -16,7 +16,8 @@
             <label class="col-lg-2 control-label" for="activityName">名称</label>
             <div class="col-lg-3">
               <input id="activityName" name="activityName" type="text"
-                     class="form-control" placeholder="请输入名称" v-model="activityName"/>
+                     class="form-control" placeholder="请输入名称" v-model="activityName" v-validate="'required'"/>
+              <span v-show="errors.has('activityName')" class="help is-danger">{{errors.first('activityName')}}</span>
             </div>
           </div>
           <div class="form-group">
@@ -82,20 +83,26 @@
     },
     methods: {
       save: function () {
-        this.$axios.post('/aapi/activity/add', {
-          activityID: this.$route.params.id ? this.$route.params.id : null,
-          activityName: this.activityName,
-          activityStartTime: this.activityStartTime,
-          activityEndTime: this.activityStartTime
-        }).then((response) => {
-          if (response.data.code === '1') {
-            this.successElert = true
-            setTimeout(function () {
-              this.$router.push({name: 'ActivityIndex'})
-            }.bind(this), 2000)
-          } else {
-            this.errorElert = true
+        this.$validator.validateAll().then((result) => {
+          if (result) {
+          // eslint-disable-next-line
+            this.$axios.post('/aapi/activity/add', {
+              activityID: this.$route.params.id ? this.$route.params.id : null,
+              activityName: this.activityName,
+              activityStartTime: this.activityStartTime,
+              activityEndTime: this.activityStartTime
+            }).then((response) => {
+              if (response.data.code === '1') {
+                this.successElert = true
+                setTimeout(function () {
+                  this.$router.push({name: 'ActivityIndex'})
+                }.bind(this), 2000)
+              } else {
+                this.errorElert = true
+              }
+            })
           }
+          // alert('Correct them errors!')
         })
       },
       getOneData: function (id) {
